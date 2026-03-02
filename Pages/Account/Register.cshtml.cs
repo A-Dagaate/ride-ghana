@@ -33,6 +33,10 @@ public class RegisterModel : PageModel
         [Required, DataType(DataType.Password), Compare("Password")]
         [Display(Name = "Confirm Password")]
         public string ConfirmPassword { get; set; } = string.Empty;
+
+        // "Self" or "Driver"
+        [Required]
+        public string DriveOption { get; set; } = "Self";
     }
 
     public void OnGet() { }
@@ -41,12 +45,15 @@ public class RegisterModel : PageModel
     {
         if (!ModelState.IsValid) return Page();
 
+        var driveOption = Input.DriveOption == "Driver" ? "Driver" : "Self";
+
         var user = new ApplicationUser
         {
             FullName = Input.FullName,
             UserName = Input.Email,
             Email = Input.Email,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            DriveOption = driveOption
         };
 
         var result = await _userManager.CreateAsync(user, Input.Password);
