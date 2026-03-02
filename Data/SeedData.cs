@@ -48,8 +48,8 @@ public static class SeedData
                     DailyRate = 200,
                     Seats = 5,
                     Transmission = "Automatic",
-                    Description = "Reliable and fuel-efficient sedan, perfect for city driving around Accra.",
-                    ImagePath = "/images/cars/camry.jpg",
+                    Description = "Reliable and fuel-efficient sedan, perfect for city driving around Kumasi.",
+                    ImagePath = "/images/cars/camry_front.jpeg",
                     Location = "Kumasi, Ghana"
                 },
                 new Car
@@ -59,24 +59,24 @@ public static class SeedData
                     Year = 2015,
                     Category = "Economy",
                     DailyRate = 250,
-                    Seats = 7,
+                    Seats = 5,
                     Transmission = "Automatic",
                     Description = "Reliable and fuel-efficient sedan, perfect for city driving around Kumasi.",
-                    ImagePath = "/images/cars/landcruiser.jpg",
+                    ImagePath = "/images/cars/Elantra_f.jpg",
                     Location = "Kumasi, Ghana"
                 },
                 new Car
                 {
                     Make = "Mercedes-Benz",
                     Model = "E-Class",
-                    Year = 2023,
+                    Year = 2015,
                     Category = "Luxury",
                     DailyRate = 650,
                     Seats = 5,
                     Transmission = "Automatic",
                     Description = "Premium executive sedan for business travel or special occasions.",
-                    ImagePath = "/images/cars/eclass.jpg",
-                    Location = "Accra, Ghana"
+                    ImagePath = "/images/cars/Elantra_rear.jpeg",
+                    Location = "Kumasi, Ghana"
                 },
                 new Car
                 {
@@ -88,7 +88,7 @@ public static class SeedData
                     Seats = 5,
                     Transmission = "Automatic",
                     Description = "Comfortable mid-size SUV, great for families and weekend road trips.",
-                    ImagePath = "/images/cars/tucson.jpg",
+                    ImagePath = "/images/cars/Corolla_side.jpeg",
                     Location = "Kumasi, Ghana"
                 },
                 new Car
@@ -102,7 +102,7 @@ public static class SeedData
                     Transmission = "Manual",
                     Description = "Compact and budget-friendly, great for navigating busy city streets.",
                     ImagePath = "/images/cars/rio.jpg",
-                    Location = "Takoradi, Ghana"
+                    Location = "Kumasi, Ghana"
                 }
             });
 
