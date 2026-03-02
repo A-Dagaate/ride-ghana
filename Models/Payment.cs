@@ -13,6 +13,7 @@ public class Payment
     public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
     public string? StripePaymentIntentId { get; set; }
     public string? StripeClientSecret { get; set; }
+    public string? PaystackReference { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? PaidAt { get; set; }
 }

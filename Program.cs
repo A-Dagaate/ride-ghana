@@ -52,6 +52,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<AvailabilityService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+builder.Services.AddHttpClient<PaystackService>((sp, client) =>
+{
+    var key = sp.GetRequiredService<IConfiguration>()["Paystack:SecretKey"] ?? string.Empty;
+    client.DefaultRequestHeaders.Authorization =
+        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", key);
+});
+
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AuthorizePage("/Reservations/Index");

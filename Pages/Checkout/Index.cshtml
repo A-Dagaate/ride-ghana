@@ -1,9 +1,12 @@
 @page
 @model RideGhana.Pages.Checkout.IndexModel
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery Antiforgery
 @{
     ViewData["Title"] = "Checkout";
     var sym = Model.CurrencySymbol;
     var display = Model.DisplayAmount;
+    var isGhs = Model.SelectedCurrency == "GHS";
 }
 
 <div class="container py-5" style="max-width:700px">
@@ -11,12 +14,12 @@
 
     <!-- Currency badge -->
     <div class="d-flex align-items-center gap-2 mb-4">
-        <span class="badge rounded-pill @(Model.SelectedCurrency == "USD" ? "bg-primary" : "bg-success") px-3 py-2 fs-6">
+        <span class="badge rounded-pill @(isGhs ? "bg-success" : "bg-primary") px-3 py-2 fs-6">
             Paying in @Model.SelectedCurrency
         </span>
-        @if (Model.SelectedCurrency == "USD")
+        @if (!isGhs)
         {
-            <span class="text-muted small">Rate: GHS 1 = USD @Model.DisplayAmount.ToString("N4").Split('.')[1][..4] &nbsp;·&nbsp; Want GHS? Go back and toggle the currency.</span>
+            <span class="text-muted small">Want GHS? Go back and toggle the currency.</span>
         }
     </div>
 
@@ -41,14 +44,14 @@
                 <div class="col-6 text-muted">Duration</div>
                 <div class="col-6 text-end fw-semibold">@Model.Reservation.TotalDays day(s)</div>
                 <div class="col-6 text-muted">Daily Rate</div>
-                <div class="col-6 text-end fw-semibold" data-ghs="@Model.Reservation.Car.DailyRate">GHS @Model.Reservation.Car.DailyRate.ToString("N0")</div>
+                <div class="col-6 text-end fw-semibold">GHS @Model.Reservation.Car.DailyRate.ToString("N0")</div>
             </div>
             <hr />
             <div class="d-flex justify-content-between fw-bold fs-5">
                 <span>Total Charged</span>
                 <span class="text-success">@sym @display.ToString("N2")</span>
             </div>
-            @if (Model.SelectedCurrency == "USD")
+            @if (!isGhs)
             {
                 <p class="text-muted small mb-0 text-end">(GHS @Model.Reservation.TotalCost.ToString("N2") equivalent)</p>
             }
@@ -59,56 +62,137 @@
     <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
             <h6 class="fw-bold text-muted text-uppercase small mb-3">Payment Details</h6>
-            <div id="payment-element" class="mb-3"></div>
+
             <div id="payment-message" class="alert alert-danger d-none" role="alert"></div>
-            <div class="d-grid">
-                <button id="submit-btn" class="btn rg-btn-primary btn-lg">
-                    <span id="btn-text"><i class="bi bi-lock"></i> Pay @sym @display.ToString("N2")</span>
-                    <span id="btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
-                </button>
-            </div>
-            <p class="text-center text-muted small mt-2">
-                <i class="bi bi-shield-check"></i> Encrypted &amp; secured by Stripe
-            </p>
+
+            @if (isGhs)
+            {
+                <!-- Paystack Popup -->
+                <input id="af-token" type="hidden"
+                       value="@Antiforgery.GetAndStoreTokens(HttpContext).RequestToken" />
+                <div class="d-grid">
+                    <button id="paystack-btn" type="button" class="btn rg-btn-primary btn-lg">
+                        <span id="btn-text"><i class="bi bi-lock"></i> Pay GHS @display.ToString("N2")</span>
+                        <span id="btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                </div>
+                <p class="text-center text-muted small mt-2">
+                    <i class="bi bi-shield-check"></i> Secured by Paystack
+                </p>
+            }
+            else
+            {
+                <!-- Stripe Elements -->
+                <div id="payment-element" class="mb-3"></div>
+                <div class="d-grid">
+                    <button id="submit-btn" class="btn rg-btn-primary btn-lg">
+                        <span id="btn-text"><i class="bi bi-lock"></i> Pay @sym @display.ToString("N2")</span>
+                        <span id="btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                </div>
+                <p class="text-center text-muted small mt-2">
+                    <i class="bi bi-shield-check"></i> Encrypted &amp; secured by Stripe
+                </p>
+            }
         </div>
     </div>
 </div>
 
 @section Scripts {
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-(async () => {
-    const stripe = Stripe('@Model.StripePublishableKey');
-    const clientSecret = '@Model.ClientSecret';
+@if (isGhs)
+{
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script>
+    (function () {
+        var btn     = document.getElementById('paystack-btn');
+        var spinner = document.getElementById('btn-spinner');
+        var btnText = document.getElementById('btn-text');
+        var msgBox  = document.getElementById('payment-message');
 
-    const elements = stripe.elements({ clientSecret });
-    const paymentEl = elements.create('payment');
-    paymentEl.mount('#payment-element');
+        btn.addEventListener('click', function () {
+            var handler = PaystackPop.setup({
+                key:      '@Model.PaystackPublicKey',
+                email:    '@Html.Raw(Model.UserEmail)',
+                amount:   @((long)(display * 100)),
+                currency: 'GHS',
+                ref:      '@Model.PaystackReference',
+                callback: function (response) {
+                    btn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    btnText.classList.add('d-none');
 
-    document.getElementById('submit-btn').addEventListener('click', async () => {
-        const btn     = document.getElementById('submit-btn');
-        const spinner = document.getElementById('btn-spinner');
-        const btnText = document.getElementById('btn-text');
-        btn.disabled = true;
-        spinner.classList.remove('d-none');
-        btnText.classList.add('d-none');
+                    fetch('/Checkout/Index?handler=VerifyPaystack', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.getElementById('af-token').value
+                        },
+                        body: JSON.stringify({ reference: response.reference })
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data.ok) {
+                            window.location.href = data.redirect;
+                        } else {
+                            msgBox.textContent = data.message || 'Payment verification failed. Please contact support.';
+                            msgBox.classList.remove('d-none');
+                            btn.disabled = false;
+                            spinner.classList.add('d-none');
+                            btnText.classList.remove('d-none');
+                        }
+                    })
+                    .catch(function () {
+                        msgBox.textContent = 'A network error occurred. Please try again.';
+                        msgBox.classList.remove('d-none');
+                        btn.disabled = false;
+                        spinner.classList.add('d-none');
+                        btnText.classList.remove('d-none');
+                    });
+                },
+                onClose: function () { /* user closed popup, nothing to do */ }
+            });
+            handler.openIframe();
+        });
+    })();
+    </script>
+}
+else
+{
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+    (async () => {
+        const stripe = Stripe('@Model.StripePublishableKey');
+        const clientSecret = '@Model.ClientSecret';
 
-        const { error } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                return_url: `${window.location.origin}/Reservations/Index?success=true`
+        const elements = stripe.elements({ clientSecret });
+        const paymentEl = elements.create('payment');
+        paymentEl.mount('#payment-element');
+
+        document.getElementById('submit-btn').addEventListener('click', async () => {
+            const btn     = document.getElementById('submit-btn');
+            const spinner = document.getElementById('btn-spinner');
+            const btnText = document.getElementById('btn-text');
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+            btnText.classList.add('d-none');
+
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: `${window.location.origin}/Reservations/Index?success=true`
+                }
+            });
+
+            if (error) {
+                const msg = document.getElementById('payment-message');
+                msg.textContent = error.message;
+                msg.classList.remove('d-none');
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+                btnText.classList.remove('d-none');
             }
         });
-
-        if (error) {
-            const msg = document.getElementById('payment-message');
-            msg.textContent = error.message;
-            msg.classList.remove('d-none');
-            btn.disabled = false;
-            spinner.classList.add('d-none');
-            btnText.classList.remove('d-none');
-        }
-    });
-})();
-</script>
+    })();
+    </script>
+}
 }
