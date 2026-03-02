@@ -1,0 +1,24 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 60
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+# Environment variables to set in the Railway dashboard:
+#
+# DATABASE_URL        → set automatically when you attach a Postgres plugin
+# ASPNETCORE_ENVIRONMENT=Development
+# Stripe__PublishableKey=pk_test_...
+# Stripe__SecretKey=sk_test_...
+# Stripe__WebhookSecret=whsec_...
+# Email__SmtpHost=smtp.gmail.com
+# Email__SmtpPort=587
+# Email__SmtpUser=your@gmail.com
+# Email__SmtpPass=your-app-password
+# Email__FromAddress=no-reply@rideghana.com
+# Email__FromName=Ride Ghana
+# Email__NotificationAddress=b.anogoya@placeholderemail.com

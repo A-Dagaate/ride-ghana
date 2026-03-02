@@ -1,0 +1,32 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Runtime artifacts
+*.db
+*.db-shm
+*.db-wal
+logs/
+*.log
+
+## Secrets (never commit real keys)
+appsettings.Production.json
+appsettings.Local.json
+.env
+
+## Published output
+publish/
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Uploaded files
+uploads/
+processed/
+
+## Frontend vendor libs (restored via libman / npm)
+wwwroot/lib/

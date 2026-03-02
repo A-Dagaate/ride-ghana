@@ -1,0 +1,129 @@
+@page "{id:int}"
+@model RideGhana.Pages.Cars.BookModel
+@{
+    ViewData["Title"] = $"Book {Model.Car.Make} {Model.Car.Model}";
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-page="/Cars/Index">Cars</a></li>
+            <li class="breadcrumb-item active">Book @Model.Car.Make @Model.Car.Model</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Car Summary -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm">
+                <img src="@Model.Car.ImagePath" alt="@Model.Car.Make @Model.Car.Model"
+                     class="card-img-top" style="height:220px;object-fit:cover;border-radius:12px 12px 0 0"
+                     onerror="this.src='/images/cars/placeholder.svg'" />
+                <div class="card-body">
+                    <h4 class="fw-bold">@Model.Car.Year @Model.Car.Make @Model.Car.Model</h4>
+                    <p class="text-muted"><i class="bi bi-geo-alt"></i> @Model.Car.Location</p>
+                    <hr />
+                    <div class="row g-2 text-center">
+                        <div class="col-4">
+                            <i class="bi bi-people fs-5 text-success"></i>
+                            <p class="small mb-0">@Model.Car.Seats Seats</p>
+                        </div>
+                        <div class="col-4">
+                            <i class="bi bi-gear fs-5 text-success"></i>
+                            <p class="small mb-0">@Model.Car.Transmission</p>
+                        </div>
+                        <div class="col-4">
+                            <i class="bi bi-tag fs-5 text-success"></i>
+                            <p class="small mb-0">@Model.Car.Category</p>
+                        </div>
+                    </div>
+                    <hr />
+                    <!-- Cost Summary (updated by JS) -->
+                    <div id="costSummary">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Rate</span>
+                            <span>GHS @Model.Car.DailyRate.ToString("N0") / day</span>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <span class="text-muted">Duration</span>
+                            <span id="daysDisplay">@Model.TotalDays day(s)</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between fw-bold fs-5">
+                            <span>Total</span>
+                            <span class="text-success" id="totalDisplay">GHS @Model.TotalCost.ToString("N0")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-calendar-check text-success"></i> Booking Details</h5>
+
+                    <form method="post" asp-route-id="@Model.Car.Id">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:none"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Pick-up Date</label>
+                            <input asp-for="StartDate" type="date" class="form-control"
+                                   min="@DateTime.Today.ToString("yyyy-MM-dd")" id="startDate" />
+                            <span asp-validation-for="StartDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Return Date</label>
+                            <input asp-for="EndDate" type="date" class="form-control"
+                                   min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" id="endDate" />
+                            <span asp-validation-for="EndDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Pick-up Location</label>
+                            <select asp-for="PickupLocation" class="form-select">
+                                <option value="Accra, Ghana">Accra, Ghana</option>
+                                <option value="Kumasi, Ghana">Kumasi, Ghana</option>
+                                <option value="Takoradi, Ghana">Takoradi, Ghana</option>
+                                <option value="Tamale, Ghana">Tamale, Ghana</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn rg-btn-primary btn-lg">
+                                <i class="bi bi-lock"></i> Proceed to Payment
+                            </button>
+                        </div>
+                        <p class="text-center text-muted small mt-2">
+                            <i class="bi bi-shield-check"></i> Secure checkout powered by Stripe
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const dailyRate = @Model.Car.DailyRate;
+    const startEl = document.getElementById('startDate');
+    const endEl = document.getElementById('endDate');
+    const daysEl = document.getElementById('daysDisplay');
+    const totalEl = document.getElementById('totalDisplay');
+
+    function updateCost() {
+        const s = new Date(startEl.value);
+        const e = new Date(endEl.value);
+        const days = Math.max(1, Math.round((e - s) / 86400000));
+        const total = days * dailyRate;
+        daysEl.textContent = days + ' day(s)';
+        totalEl.textContent = 'GHS ' + total.toLocaleString('en-GH', {minimumFractionDigits: 0});
+    }
+
+    startEl.addEventListener('change', updateCost);
+    endEl.addEventListener('change', updateCost);
+</script>
+}

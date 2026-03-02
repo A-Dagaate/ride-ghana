@@ -1,0 +1,97 @@
+@page
+@model RideGhana.Pages.Checkout.IndexModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container py-5" style="max-width:700px">
+    <h2 class="fw-bold mb-4"><i class="bi bi-lock text-success"></i> Secure Checkout</h2>
+
+    <!-- Order Summary -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold text-muted text-uppercase small mb-3">Order Summary</h6>
+            <div class="d-flex align-items-center gap-3">
+                <img src="@Model.Reservation.Car.ImagePath" alt="" style="width:80px;height:55px;object-fit:cover;border-radius:8px"
+                     onerror="this.src='/images/cars/placeholder.svg'" />
+                <div>
+                    <h5 class="mb-0 fw-bold">@Model.Reservation.Car.Year @Model.Reservation.Car.Make @Model.Reservation.Car.Model</h5>
+                    <p class="text-muted small mb-0">@Model.Reservation.PickupLocation</p>
+                </div>
+            </div>
+            <hr />
+            <div class="row g-2 small">
+                <div class="col-6 text-muted">Pick-up</div>
+                <div class="col-6 text-end fw-semibold">@Model.Reservation.StartDate.ToString("MMM d, yyyy")</div>
+                <div class="col-6 text-muted">Return</div>
+                <div class="col-6 text-end fw-semibold">@Model.Reservation.EndDate.ToString("MMM d, yyyy")</div>
+                <div class="col-6 text-muted">Duration</div>
+                <div class="col-6 text-end fw-semibold">@Model.Reservation.TotalDays day(s)</div>
+                <div class="col-6 text-muted">Daily Rate</div>
+                <div class="col-6 text-end fw-semibold">GHS @Model.Reservation.Car.DailyRate.ToString("N0")</div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-between fw-bold fs-5">
+                <span>Total</span>
+                <span class="text-success">GHS @Model.Reservation.TotalCost.ToString("N2")</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Form -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <h6 class="fw-bold text-muted text-uppercase small mb-3">Payment Details</h6>
+            <div id="payment-element" class="mb-3"></div>
+            <div id="payment-message" class="alert alert-danger d-none" role="alert"></div>
+            <div class="d-grid">
+                <button id="submit-btn" class="btn rg-btn-primary btn-lg">
+                    <span id="btn-text"><i class="bi bi-lock"></i> Pay GHS @Model.Reservation.TotalCost.ToString("N2")</span>
+                    <span id="btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </div>
+            <p class="text-center text-muted small mt-2">
+                <i class="bi bi-shield-check"></i> Encrypted &amp; secured by Stripe
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+(async () => {
+    const stripe = Stripe('@Model.StripePublishableKey');
+    const clientSecret = '@Model.ClientSecret';
+
+    const elements = stripe.elements({ clientSecret });
+    const paymentEl = elements.create('payment');
+    paymentEl.mount('#payment-element');
+
+    document.getElementById('submit-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('submit-btn');
+        const spinner = document.getElementById('btn-spinner');
+        const btnText = document.getElementById('btn-text');
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+        btnText.classList.add('d-none');
+
+        const { error } = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                return_url: `${window.location.origin}/Reservations/Index?success=true`
+            }
+        });
+
+        if (error) {
+            const msg = document.getElementById('payment-message');
+            msg.textContent = error.message;
+            msg.classList.remove('d-none');
+            btn.disabled = false;
+            spinner.classList.add('d-none');
+            btnText.classList.remove('d-none');
+        }
+    });
+})();
+</script>
+}

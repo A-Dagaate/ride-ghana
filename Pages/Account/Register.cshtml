@@ -1,0 +1,54 @@
+@page
+@model RideGhana.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div class="container py-5" style="max-width:480px">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <h2 class="fw-bold text-center mb-1">Create Account</h2>
+            <p class="text-center text-muted mb-4">Join Ride Ghana today</p>
+
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Full Name</label>
+                    <input asp-for="Input.FullName" class="form-control form-control-lg" placeholder="Kwame Mensah" autofocus />
+                    <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Email Address</label>
+                    <input asp-for="Input.Email" type="email" class="form-control form-control-lg" placeholder="you@example.com" />
+                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Password</label>
+                    <input asp-for="Input.Password" type="password" class="form-control form-control-lg" placeholder="At least 8 characters" />
+                    <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Confirm Password</label>
+                    <input asp-for="Input.ConfirmPassword" type="password" class="form-control form-control-lg" placeholder="Repeat password" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn rg-btn-primary btn-lg">Create Account</button>
+                </div>
+            </form>
+
+            <p class="text-center text-muted small mb-0">
+                Already have an account? <a asp-page="/Account/Login" class="text-success fw-semibold">Sign in</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+}

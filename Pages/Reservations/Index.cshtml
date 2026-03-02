@@ -1,0 +1,71 @@
+@page
+@model RideGhana.Pages.Reservations.IndexModel
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+<div class="container py-5">
+    <h2 class="fw-bold mb-4">My Bookings</h2>
+
+    @if (!Model.Reservations.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-calendar-x fs-1 text-muted"></i>
+            <h5 class="mt-3 text-muted">No reservations yet</h5>
+            <a asp-page="/Cars/Index" class="btn rg-btn-primary mt-2">Browse Cars</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var r in Model.Reservations)
+            {
+                var statusClass = r.Status switch
+                {
+                    ReservationStatus.Confirmed => "success",
+                    ReservationStatus.Pending => "warning",
+                    ReservationStatus.Active => "primary",
+                    ReservationStatus.Completed => "secondary",
+                    ReservationStatus.Cancelled => "danger",
+                    _ => "secondary"
+                };
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="position-relative">
+                            <img src="@r.Car.ImagePath" alt="" class="card-img-top"
+                                 style="height:150px;object-fit:cover"
+                                 onerror="this.src='/images/cars/placeholder.svg'" />
+                            <span class="badge bg-@statusClass position-absolute top-0 end-0 m-2">@r.Status</span>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-1">@r.Car.Year @r.Car.Make @r.Car.Model</h6>
+                            <p class="text-muted small mb-1"><i class="bi bi-geo-alt"></i> @r.PickupLocation</p>
+                            <p class="text-muted small mb-1">
+                                <i class="bi bi-calendar"></i>
+                                @r.StartDate.ToString("MMM d") – @r.EndDate.ToString("MMM d, yyyy")
+                                (@r.TotalDays day(s))
+                            </p>
+                            <p class="fw-bold text-success mb-1">GHS @r.TotalCost.ToString("N2")</p>
+                            <p class="text-muted small">Reservation #@r.Id</p>
+
+                            @if (r.Status == ReservationStatus.Pending)
+                            {
+                                <div class="d-flex gap-2">
+                                    <a asp-page="/Checkout/Index" asp-route-reservationId="@r.Id"
+                                       class="btn rg-btn-primary btn-sm flex-fill">
+                                        Complete Payment
+                                    </a>
+                                    <form method="post" asp-page-handler="Cancel" asp-route-id="@r.Id"
+                                          onsubmit="return confirm('Cancel this reservation?')">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Cancel</button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

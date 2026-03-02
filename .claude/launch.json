@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "RideGhana",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "/Users/anogoyadagaate/Documents/AIMachL/Projects/RideGhana/RideGhana.csproj"],
+      "port": 5000
+    }
+  ]
+}

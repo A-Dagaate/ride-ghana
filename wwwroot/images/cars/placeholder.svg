@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="220" viewBox="0 0 400 220">
+  <rect width="400" height="220" fill="#e8f5ee"/>
+  <text x="200" y="95" text-anchor="middle" font-size="56" fill="#1a7a4a">🚗</text>
+  <text x="200" y="145" text-anchor="middle" font-size="18" fill="#1a7a4a" font-family="sans-serif">Ride Ghana</text>
+</svg>

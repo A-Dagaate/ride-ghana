@@ -1,0 +1,169 @@
+/* ============================================================
+   Ride Ghana — Mobile-first design system
+   Brand: Deep forest green (#1a7a4a) + Gold (#d4a017)
+   ============================================================ */
+
+:root {
+    --rg-green: #1a7a4a;
+    --rg-green-dark: #145c38;
+    --rg-gold: #d4a017;
+    --rg-light: #f8faf9;
+    --rg-card-radius: 14px;
+}
+
+html { font-size: 15px; scroll-behavior: smooth; }
+@media (min-width: 768px) { html { font-size: 16px; } }
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #fff;
+    color: #222;
+}
+
+/* ---- Navbar ---- */
+.rg-navbar {
+    background: var(--rg-green);
+    padding: 0.6rem 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,.18);
+}
+
+.rg-navbar .navbar-brand,
+.rg-navbar .nav-link,
+.rg-navbar .navbar-toggler { color: #fff !important; }
+
+.rg-navbar .nav-link:hover { color: var(--rg-gold) !important; }
+
+.rg-logo { font-weight: 700; font-size: 1.25rem; letter-spacing: -.5px; }
+
+.rg-btn-outline {
+    border: 2px solid #fff;
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .2s;
+}
+.rg-btn-outline:hover { background: rgba(255,255,255,.15); color: #fff; }
+
+/* ---- Hero ---- */
+.rg-hero {
+    position: relative;
+    min-height: 520px;
+    background: linear-gradient(135deg, #0d4a2e 0%, #1a7a4a 50%, #2d9d62 100%);
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 576px) { .rg-hero { min-height: 420px; } }
+
+.rg-hero-overlay {
+    position: absolute; inset: 0;
+    background: url('/images/hero-pattern.svg') center/cover;
+    opacity: .06;
+    pointer-events: none;
+}
+
+.rg-hero-content {
+    position: relative;
+    z-index: 1;
+    padding: 60px 16px 40px;
+    width: 100%;
+}
+
+/* ---- Search card ---- */
+.rg-search-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    max-width: 640px;
+}
+
+/* ---- Buttons ---- */
+.rg-btn-primary {
+    background: var(--rg-green);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: background .2s, transform .1s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.rg-btn-primary:hover  { background: var(--rg-green-dark); color: #fff; transform: translateY(-1px); }
+.rg-btn-primary:active { transform: translateY(0); }
+
+/* ---- Car cards ---- */
+.rg-car-card {
+    border-radius: var(--rg-card-radius);
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    transition: box-shadow .2s, transform .2s;
+    overflow: hidden;
+}
+.rg-car-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,.14); transform: translateY(-3px); }
+
+.rg-car-img-wrapper { position: relative; overflow: hidden; height: 190px; }
+.rg-car-img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+.rg-car-card:hover .rg-car-img { transform: scale(1.04); }
+
+.rg-badge-category {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--rg-green);
+    color: #fff;
+    font-size: .7rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* ---- Filter card ---- */
+.rg-filter-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+/* ---- Step circles ---- */
+.rg-step-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--rg-green);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem; font-weight: 700;
+}
+
+/* ---- Footer ---- */
+.rg-footer {
+    background: #111;
+}
+
+/* ---- Forms ---- */
+.form-control:focus, .form-select:focus {
+    border-color: var(--rg-green);
+    box-shadow: 0 0 0 3px rgba(26,122,74,.15);
+}
+
+/* ---- Utilities ---- */
+.text-success { color: var(--rg-green) !important; }
+.btn-outline-success { border-color: var(--rg-green); color: var(--rg-green); }
+.btn-outline-success:hover { background: var(--rg-green); color: #fff; }
+
+/* ---- Mobile touch targets ---- */
+@media (max-width: 768px) {
+    .btn { min-height: 44px; }
+    .form-control, .form-select { min-height: 48px; font-size: 1rem; }
+    .rg-car-img-wrapper { height: 160px; }
+    .rg-hero-content h1 { font-size: 1.8rem; }
+}
+
+/* ---- PWA safe areas (iPhone notch) ---- */
+@supports (padding: max(0px)) {
+    .rg-navbar { padding-top: max(.6rem, env(safe-area-inset-top)); }
+    body > main { padding-bottom: env(safe-area-inset-bottom); }
+}
