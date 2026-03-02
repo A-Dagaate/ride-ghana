@@ -1,0 +1,172 @@
+@page
+@model RideGhana.Pages.ArrangePickupModel
+@{
+    ViewData["Title"] = "Arrange Pickup";
+}
+
+<div class="container py-5" style="max-width:620px">
+
+    <div class="text-center mb-5">
+        <div class="rg-step-circle mx-auto mb-3" style="width:64px;height:64px;font-size:1.6rem">🚗</div>
+        <h2 class="fw-bold mb-1">Arrange Your Pickup</h2>
+        <p class="text-muted">Choose how you'd like to receive your rental vehicle.</p>
+    </div>
+
+    <form method="post" id="pickupForm">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <!-- Option A: Default Pickup -->
+        <div class="rg-pickup-card mb-3" id="cardPickup" onclick="selectOption(false)">
+            <div class="d-flex align-items-start gap-3">
+                <div class="rg-radio-circle mt-1" id="radioPickup"></div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1">
+                        <i class="bi bi-shop text-success"></i> Pick up from our location
+                    </h6>
+                    <p class="text-muted small mb-2">Visit us directly — quick handover, no wait.</p>
+                    <div class="d-flex align-items-center gap-2 rg-address-pill">
+                        <i class="bi bi-geo-alt-fill text-success"></i>
+                        <span class="small fw-semibold">@ArrangePickupModel.DefaultPickupAddress</span>
+                    </div>
+                    <a href="https://maps.google.com/?q=Ejisu+Junction+Ghana"
+                       target="_blank" rel="noopener"
+                       class="small text-success mt-1 d-inline-block"
+                       onclick="event.stopPropagation()">
+                        <i class="bi bi-map"></i> View on Google Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Option B: Delivery -->
+        <div class="rg-pickup-card" id="cardDelivery" onclick="selectOption(true)">
+            <div class="d-flex align-items-start gap-3">
+                <div class="rg-radio-circle mt-1" id="radioDelivery"></div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1">
+                        <i class="bi bi-truck text-success"></i> Deliver to my address
+                        <span class="badge bg-success ms-2 fw-normal" style="font-size:.7rem">Free within 10 miles</span>
+                    </h6>
+                    <p class="text-muted small mb-3">We'll bring the car to you. Free delivery within 10 miles of Ejisu Junction.</p>
+
+                    <!-- Address input -->
+                    <div id="deliveryFields" style="display:none">
+                        <div class="mb-2">
+                            <div class="input-group">
+                                <input asp-for="DeliveryAddress"
+                                       id="deliveryAddressInput"
+                                       class="form-control"
+                                       placeholder="Enter your delivery address"
+                                       onclick="event.stopPropagation()" />
+                                <button type="button" class="btn rg-btn-primary"
+                                        id="geoBtn" onclick="event.stopPropagation(); getMyLocation()"
+                                        title="Use my current location">
+                                    <i class="bi bi-crosshair2" id="geoIcon"></i>
+                                    <span id="geoText" class="ms-1 d-none d-sm-inline">Get my location</span>
+                                </button>
+                            </div>
+                            <span asp-validation-for="DeliveryAddress" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Distance status -->
+                        <div id="deliveryStatus" class="small mt-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden field carries the choice -->
+        <input type="hidden" asp-for="PreferDelivery" id="preferDeliveryInput" value="false" />
+
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn rg-btn-primary btn-lg">
+                Confirm &amp; Browse Cars <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+        </div>
+        <p class="text-center text-muted small mt-2">You can update this anytime from your account settings.</p>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+// ── Ejisu Junction reference point ────────────────────────────────────────────
+const EJISU = { lat: @ArrangePickupModel.EjisuLat, lon: @ArrangePickupModel.EjisuLon };
+const FREE_MILES = 10;
+
+// ── Option selection ──────────────────────────────────────────────────────────
+function selectOption(delivery) {
+    document.getElementById('preferDeliveryInput').value = delivery ? 'true' : 'false';
+
+    document.getElementById('cardPickup').classList.toggle('rg-pickup-selected', !delivery);
+    document.getElementById('cardDelivery').classList.toggle('rg-pickup-selected', delivery);
+    document.getElementById('radioPickup').classList.toggle('rg-radio-active', !delivery);
+    document.getElementById('radioDelivery').classList.toggle('rg-radio-active', delivery);
+    document.getElementById('deliveryFields').style.display = delivery ? 'block' : 'none';
+
+    if (delivery) document.getElementById('deliveryAddressInput').focus();
+}
+
+// Default: pickup selected
+selectOption(false);
+
+// ── Geolocation ───────────────────────────────────────────────────────────────
+function haversine(lat1, lon1, lat2, lon2) {
+    const R = 3958.8, toRad = d => d * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat/2)**2
+            + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function setGeoLoading(loading) {
+    const icon = document.getElementById('geoIcon');
+    const text = document.getElementById('geoText');
+    icon.className = loading ? 'spinner-border spinner-border-sm' : 'bi bi-crosshair2';
+    if (text) text.textContent = loading ? 'Locating…' : 'Get my location';
+    document.getElementById('geoBtn').disabled = loading;
+}
+
+function showDeliveryStatus(miles) {
+    const el = document.getElementById('deliveryStatus');
+    const free = miles <= FREE_MILES;
+    el.innerHTML = free
+        ? `<span class="text-success"><i class="bi bi-check-circle-fill"></i> <strong>Free delivery</strong> — you are ${miles.toFixed(1)} mi from Ejisu Junction.</span>`
+        : `<span class="text-warning"><i class="bi bi-exclamation-triangle-fill"></i> You are ${miles.toFixed(1)} mi away — beyond our free 10-mile zone. A delivery fee may apply.</span>`;
+}
+
+function getMyLocation() {
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser. Please enter your address manually.');
+        return;
+    }
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            const { latitude: lat, longitude: lon } = pos.coords;
+            const miles = haversine(lat, lon, EJISU.lat, EJISU.lon);
+
+            // Reverse-geocode via Nominatim (free, no key needed)
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('deliveryAddressInput').value =
+                        data.display_name || `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+                })
+                .catch(() => {
+                    document.getElementById('deliveryAddressInput').value =
+                        `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+                })
+                .finally(() => {
+                    showDeliveryStatus(miles);
+                    setGeoLoading(false);
+                });
+        },
+        err => {
+            setGeoLoading(false);
+            alert('Could not get your location. Please enter your address manually.');
+        },
+        { timeout: 10000 }
+    );
+}
+</script>
+}

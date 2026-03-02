@@ -25,6 +25,7 @@ public class BookModel : PageModel
     [BindProperty] public DateTime StartDate { get; set; } = DateTime.Today;
     [BindProperty] public DateTime EndDate { get; set; } = DateTime.Today.AddDays(3);
     [BindProperty] public string PickupLocation { get; set; } = string.Empty;
+    [BindProperty] public string SelectedCurrency { get; set; } = "GHS";
 
     public int TotalDays => Math.Max(1, (int)(EndDate - StartDate).TotalDays);
     public decimal TotalCost => Car == null ? 0 : Car.DailyRate * TotalDays;
@@ -77,6 +78,7 @@ public class BookModel : PageModel
         _db.Reservations.Add(reservation);
         await _db.SaveChangesAsync();
 
-        return RedirectToPage("/Checkout/Index", new { reservationId = reservation.Id });
+        var currency = SelectedCurrency == "USD" ? "USD" : "GHS";
+        return RedirectToPage("/Checkout/Index", new { reservationId = reservation.Id, currency });
     }
 }

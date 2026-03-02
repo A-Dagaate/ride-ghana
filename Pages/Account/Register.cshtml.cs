@@ -55,7 +55,7 @@ public class RegisterModel : PageModel
         {
             await _userManager.AddToRoleAsync(user, "Customer");
             await _signIn.SignInAsync(user, isPersistent: false);
-            return RedirectToPage("/Index");
+            return RedirectToPage("/ArrangePickup");
         }
 
         foreach (var error in result.Errors)

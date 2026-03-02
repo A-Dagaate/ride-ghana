@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create Account";
 }
 
-<div class="container py-5" style="max-width:480px">
+<div class="container py-5" style="max-width:520px">
     <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
             <h2 class="fw-bold text-center mb-1">Create Account</h2>
@@ -37,6 +37,50 @@
                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
                 </div>
 
+                <!-- Drive Option -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold d-block mb-2">How will you drive?</label>
+                    <div class="d-flex flex-column gap-2">
+
+                        <!-- Drive Myself -->
+                        <div class="rg-pickup-card rg-pickup-selected" id="cardSelf" onclick="selectDriveOption('Self')">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rg-radio-circle rg-radio-active" id="radioSelf"></div>
+                                <div class="flex-grow-1">
+                                    <p class="fw-bold mb-0">
+                                        <i class="bi bi-person-fill text-success"></i> Drive Myself
+                                    </p>
+                                    <p class="text-muted small mb-0">
+                                        Insurance purchased separately &mdash;
+                                        <span class="fw-semibold text-dark">$500</span>
+                                    </p>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                        </div>
+
+                        <!-- Driver Provided -->
+                        <div class="rg-pickup-card" id="cardDriver" onclick="selectDriveOption('Driver')">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rg-radio-circle" id="radioDriver"></div>
+                                <div class="flex-grow-1">
+                                    <p class="fw-bold mb-0">
+                                        <i class="bi bi-person-badge-fill text-success"></i> Driver Provided
+                                    </p>
+                                    <p class="text-muted small mb-0">
+                                        A professional driver is included &mdash;
+                                        <span class="badge bg-success fw-normal">No extra charge</span>
+                                    </p>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- Hidden field carries the selection -->
+                    <input type="hidden" asp-for="Input.DriveOption" id="driveOptionInput" value="Self" />
+                </div>
+
                 <div class="d-grid mb-3">
                     <button type="submit" class="btn rg-btn-primary btn-lg">Create Account</button>
                 </div>
@@ -51,4 +95,14 @@
 
 @section Scripts {
 <partial name="_ValidationScriptsPartial" />
+<script>
+function selectDriveOption(option) {
+    document.getElementById('driveOptionInput').value = option;
+
+    document.getElementById('cardSelf').classList.toggle('rg-pickup-selected', option === 'Self');
+    document.getElementById('cardDriver').classList.toggle('rg-pickup-selected', option === 'Driver');
+    document.getElementById('radioSelf').classList.toggle('rg-radio-active', option === 'Self');
+    document.getElementById('radioDriver').classList.toggle('rg-radio-active', option === 'Driver');
+}
+</script>
 }

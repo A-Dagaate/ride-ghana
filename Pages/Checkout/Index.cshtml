@@ -2,10 +2,23 @@
 @model RideGhana.Pages.Checkout.IndexModel
 @{
     ViewData["Title"] = "Checkout";
+    var sym = Model.CurrencySymbol;
+    var display = Model.DisplayAmount;
 }
 
 <div class="container py-5" style="max-width:700px">
     <h2 class="fw-bold mb-4"><i class="bi bi-lock text-success"></i> Secure Checkout</h2>
+
+    <!-- Currency badge -->
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <span class="badge rounded-pill @(Model.SelectedCurrency == "USD" ? "bg-primary" : "bg-success") px-3 py-2 fs-6">
+            Paying in @Model.SelectedCurrency
+        </span>
+        @if (Model.SelectedCurrency == "USD")
+        {
+            <span class="text-muted small">Rate: GHS 1 = USD @Model.DisplayAmount.ToString("N4").Split('.')[1][..4] &nbsp;·&nbsp; Want GHS? Go back and toggle the currency.</span>
+        }
+    </div>
 
     <!-- Order Summary -->
     <div class="card border-0 shadow-sm mb-4">
@@ -28,13 +41,17 @@
                 <div class="col-6 text-muted">Duration</div>
                 <div class="col-6 text-end fw-semibold">@Model.Reservation.TotalDays day(s)</div>
                 <div class="col-6 text-muted">Daily Rate</div>
-                <div class="col-6 text-end fw-semibold">GHS @Model.Reservation.Car.DailyRate.ToString("N0")</div>
+                <div class="col-6 text-end fw-semibold" data-ghs="@Model.Reservation.Car.DailyRate">GHS @Model.Reservation.Car.DailyRate.ToString("N0")</div>
             </div>
             <hr />
             <div class="d-flex justify-content-between fw-bold fs-5">
-                <span>Total</span>
-                <span class="text-success">GHS @Model.Reservation.TotalCost.ToString("N2")</span>
+                <span>Total Charged</span>
+                <span class="text-success">@sym @display.ToString("N2")</span>
             </div>
+            @if (Model.SelectedCurrency == "USD")
+            {
+                <p class="text-muted small mb-0 text-end">(GHS @Model.Reservation.TotalCost.ToString("N2") equivalent)</p>
+            }
         </div>
     </div>
 
@@ -46,7 +63,7 @@
             <div id="payment-message" class="alert alert-danger d-none" role="alert"></div>
             <div class="d-grid">
                 <button id="submit-btn" class="btn rg-btn-primary btn-lg">
-                    <span id="btn-text"><i class="bi bi-lock"></i> Pay GHS @Model.Reservation.TotalCost.ToString("N2")</span>
+                    <span id="btn-text"><i class="bi bi-lock"></i> Pay @sym @display.ToString("N2")</span>
                     <span id="btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                 </button>
             </div>
@@ -69,7 +86,7 @@
     paymentEl.mount('#payment-element');
 
     document.getElementById('submit-btn').addEventListener('click', async () => {
-        const btn = document.getElementById('submit-btn');
+        const btn     = document.getElementById('submit-btn');
         const spinner = document.getElementById('btn-spinner');
         const btnText = document.getElementById('btn-text');
         btn.disabled = true;

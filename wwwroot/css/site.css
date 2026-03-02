@@ -21,6 +21,27 @@ body {
     color: #222;
 }
 
+/* ---- Currency Toggle ---- */
+.rg-currency-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,.12);
+    border: 1.5px solid rgba(255,255,255,.4);
+    border-radius: 20px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #fff;
+    transition: background .2s;
+    letter-spacing: .5px;
+}
+.rg-currency-toggle:hover { background: rgba(255,255,255,.22); }
+.rg-currency-divider { opacity: .4; font-weight: 300; }
+.rg-currency-option { opacity: .5; transition: opacity .15s; }
+.rg-currency-option.rg-active { opacity: 1; }
+
 /* ---- Navbar ---- */
 .rg-navbar {
     background: var(--rg-green);
@@ -120,6 +141,38 @@ body {
     border-radius: 20px;
     font-weight: 600;
     text-transform: uppercase;
+}
+
+/* ---- Arrange Pickup cards ---- */
+.rg-pickup-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+    background: #fff;
+}
+.rg-pickup-card:hover { border-color: var(--rg-green); box-shadow: 0 4px 16px rgba(26,122,74,.1); }
+.rg-pickup-selected {
+    border-color: var(--rg-green) !important;
+    background: #f0faf5 !important;
+    box-shadow: 0 4px 16px rgba(26,122,74,.12);
+}
+.rg-radio-circle {
+    width: 20px; height: 20px; min-width: 20px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    transition: border-color .2s, background .2s;
+}
+.rg-radio-active {
+    border-color: var(--rg-green) !important;
+    background: radial-gradient(circle, var(--rg-green) 45%, transparent 50%);
+}
+.rg-address-pill {
+    background: #e8f5ee;
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: inline-flex;
 }
 
 /* ---- Filter card ---- */

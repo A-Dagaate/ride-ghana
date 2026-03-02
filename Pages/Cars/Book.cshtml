@@ -38,11 +38,11 @@
                         </div>
                     </div>
                     <hr />
-                    <!-- Cost Summary (updated by JS) -->
+                    <!-- Cost Summary — updated live by JS -->
                     <div id="costSummary">
                         <div class="d-flex justify-content-between">
                             <span class="text-muted">Rate</span>
-                            <span>GHS @Model.Car.DailyRate.ToString("N0") / day</span>
+                            <span><span data-ghs="@Model.Car.DailyRate">GHS @Model.Car.DailyRate.ToString("N0")</span> / day</span>
                         </div>
                         <div class="d-flex justify-content-between mt-1">
                             <span class="text-muted">Duration</span>
@@ -51,7 +51,7 @@
                         <hr />
                         <div class="d-flex justify-content-between fw-bold fs-5">
                             <span>Total</span>
-                            <span class="text-success" id="totalDisplay">GHS @Model.TotalCost.ToString("N0")</span>
+                            <span class="text-success" id="totalDisplay" data-ghs="@Model.TotalCost">GHS @Model.TotalCost.ToString("N0")</span>
                         </div>
                     </div>
                 </div>
@@ -66,6 +66,9 @@
 
                     <form method="post" asp-route-id="@Model.Car.Id">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:none"></div>
+
+                        <!-- Carries the user's currency choice to the server -->
+                        <input type="hidden" name="SelectedCurrency" value="GHS" />
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Pick-up Date</label>
@@ -108,22 +111,28 @@
 
 @section Scripts {
 <script>
-    const dailyRate = @Model.Car.DailyRate;
-    const startEl = document.getElementById('startDate');
-    const endEl = document.getElementById('endDate');
-    const daysEl = document.getElementById('daysDisplay');
-    const totalEl = document.getElementById('totalDisplay');
+    const dailyRateGhs = @Model.Car.DailyRate;
+    const startEl  = document.getElementById('startDate');
+    const endEl    = document.getElementById('endDate');
+    const daysEl   = document.getElementById('daysDisplay');
+    const totalEl  = document.getElementById('totalDisplay');
 
     function updateCost() {
         const s = new Date(startEl.value);
         const e = new Date(endEl.value);
         const days = Math.max(1, Math.round((e - s) / 86400000));
-        const total = days * dailyRate;
+        const totalGhs = days * dailyRateGhs;
+
         daysEl.textContent = days + ' day(s)';
-        totalEl.textContent = 'GHS ' + total.toLocaleString('en-GH', {minimumFractionDigits: 0});
+        totalEl.dataset.ghs = totalGhs;
+        // Use the global formatter so the currency toggle stays in sync
+        totalEl.textContent = RG.getFormat()(totalGhs);
     }
 
     startEl.addEventListener('change', updateCost);
     endEl.addEventListener('change', updateCost);
+
+    // Re-run cost when currency is toggled
+    document.addEventListener('rg:currencyChanged', updateCost);
 </script>
 }

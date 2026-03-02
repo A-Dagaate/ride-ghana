@@ -27,7 +27,12 @@ public class IndexModel : PageModel
     public string StripePublishableKey { get; set; } = string.Empty;
     public string ClientSecret { get; set; } = string.Empty;
 
-    public async Task<IActionResult> OnGetAsync(int reservationId)
+    // Currency selected on the Book page ("GHS" or "USD")
+    public string SelectedCurrency { get; set; } = "GHS";
+    public decimal DisplayAmount { get; set; }
+    public string CurrencySymbol { get; set; } = "GHS";
+
+    public async Task<IActionResult> OnGetAsync(int reservationId, string currency = "GHS")
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value;
 
@@ -43,17 +48,46 @@ public class IndexModel : PageModel
 
         Reservation = reservation;
         StripePublishableKey = _config["Stripe:PublishableKey"]!;
+        SelectedCurrency = currency == "USD" ? "USD" : "GHS";
 
-        // Create or reuse PaymentIntent
+        // Compute display amount and Stripe charge amount
+        var ghsToUsd = double.Parse(_config["ExchangeRate:GhsToUsd"] ?? "0.065");
+        if (SelectedCurrency == "USD")
+        {
+            DisplayAmount = Math.Round(reservation.TotalCost * (decimal)ghsToUsd, 2);
+            CurrencySymbol = "USD";
+        }
+        else
+        {
+            DisplayAmount = reservation.TotalCost;
+            CurrencySymbol = "GHS";
+        }
+
+        // Create PaymentIntent if not yet created for this reservation
         if (reservation.Payment == null)
         {
+            // Stripe amount is always in the smallest currency unit (cents / pesewas)
+            long stripeAmount;
+            string stripeCurrency;
+            if (SelectedCurrency == "USD")
+            {
+                stripeAmount = (long)(DisplayAmount * 100);
+                stripeCurrency = "usd";
+            }
+            else
+            {
+                stripeAmount = (long)(reservation.TotalCost * 100);
+                stripeCurrency = "ghs";
+            }
+
             var options = new PaymentIntentCreateOptions
             {
-                Amount = (long)(reservation.TotalCost * 100),
-                Currency = "usd", // Change to "ghs" when Stripe supports Ghana cedis
+                Amount = stripeAmount,
+                Currency = stripeCurrency,
                 Metadata = new Dictionary<string, string>
                 {
-                    { "reservation_id", reservation.Id.ToString() }
+                    { "reservation_id", reservation.Id.ToString() },
+                    { "charged_currency", SelectedCurrency }
                 }
             };
             var service = new PaymentIntentService();
@@ -62,7 +96,8 @@ public class IndexModel : PageModel
             var payment = new Payment
             {
                 ReservationId = reservation.Id,
-                Amount = reservation.TotalCost,
+                Amount = DisplayAmount,
+                Currency = SelectedCurrency,
                 StripePaymentIntentId = intent.Id,
                 StripeClientSecret = intent.ClientSecret
             };

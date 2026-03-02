@@ -42,28 +42,28 @@ public static class SeedData
                 new Car
                 {
                     Make = "Toyota",
-                    Model = "Corolla",
-                    Year = 2022,
+                    Model = "Camry",
+                    Year = 2014,
                     Category = "Economy",
-                    DailyRate = 180,
+                    DailyRate = 200,
                     Seats = 5,
                     Transmission = "Automatic",
                     Description = "Reliable and fuel-efficient sedan, perfect for city driving around Accra.",
-                    ImagePath = "/images/cars/corolla.jpg",
-                    Location = "Accra, Ghana"
+                    ImagePath = "/images/cars/camry.jpg",
+                    Location = "Kumasi, Ghana"
                 },
                 new Car
                 {
-                    Make = "Toyota",
-                    Model = "Land Cruiser",
-                    Year = 2021,
-                    Category = "SUV",
-                    DailyRate = 450,
+                    Make = "Hyundai",
+                    Model = "Elantra",
+                    Year = 2015,
+                    Category = "Economy",
+                    DailyRate = 250,
                     Seats = 7,
                     Transmission = "Automatic",
-                    Description = "Powerful 4x4 SUV ideal for long-distance travel and rough terrain across Ghana.",
+                    Description = "Reliable and fuel-efficient sedan, perfect for city driving around Kumasi.",
                     ImagePath = "/images/cars/landcruiser.jpg",
-                    Location = "Accra, Ghana"
+                    Location = "Kumasi, Ghana"
                 },
                 new Car
                 {
