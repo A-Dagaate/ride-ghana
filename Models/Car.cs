@@ -14,6 +14,7 @@ public class Car
     public int Seats { get; set; }
     public string Transmission { get; set; } = "Automatic";
     public bool IsActive { get; set; } = true;
+    public int DisplayOrder { get; set; } = 0;
 
     public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 }

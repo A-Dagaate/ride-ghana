@@ -20,7 +20,8 @@ public class IndexModel : PageModel
     {
         FeaturedCars = await _db.Cars
             .Where(c => c.IsActive)
-            .Take(5)
+            .OrderBy(c => c.DisplayOrder)
+            .Take(6)
             .ToListAsync();
     }
 }

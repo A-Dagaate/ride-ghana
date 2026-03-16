@@ -43,6 +43,7 @@ public class AvailabilityService
 
         return await _db.Cars
             .Where(c => c.IsActive && !bookedCarIds.Contains(c.Id))
+            .OrderBy(c => c.DisplayOrder)
             .ToListAsync();
     }
 }

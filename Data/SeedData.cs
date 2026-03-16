@@ -34,7 +34,7 @@ public static class SeedData
             await userManager.AddToRoleAsync(admin, "Admin");
         }
 
-        // Seed 5 cars
+        // Seed cars
         if (!context.Cars.Any())
         {
             context.Cars.AddRange(new List<Car>
@@ -50,7 +50,22 @@ public static class SeedData
                     Transmission = "Automatic",
                     Description = "Reliable and fuel-efficient sedan, perfect for city driving around Kumasi.",
                     ImagePath = "/images/cars/camry_front.jpeg",
-                    Location = "Kumasi, Ghana"
+                    Location = "Kumasi, Ghana",
+                    DisplayOrder = 1
+                },
+                new Car
+                {
+                    Make = "Toyota",
+                    Model = "Corolla",
+                    Year = 2017,
+                    Category = "Economy",
+                    DailyRate = 200,
+                    Seats = 5,
+                    Transmission = "Automatic",
+                    Description = "Reliable and fuel-efficient sedan, perfect for city driving around Kumasi.",
+                    ImagePath = "/images/cars/Corolla_side.jpeg",
+                    Location = "Kumasi, Ghana",
+                    DisplayOrder = 2
                 },
                 new Car
                 {
@@ -62,8 +77,9 @@ public static class SeedData
                     Seats = 5,
                     Transmission = "Automatic",
                     Description = "Reliable and fuel-efficient sedan, perfect for city driving around Kumasi.",
-                    ImagePath = "/images/cars/Elantra_f.jpg",
-                    Location = "Kumasi, Ghana"
+                    ImagePath = "/images/cars/Elantra_f.jpeg",
+                    Location = "Kumasi, Ghana",
+                    DisplayOrder = 3
                 },
                 new Car
                 {
@@ -75,8 +91,9 @@ public static class SeedData
                     Seats = 5,
                     Transmission = "Automatic",
                     Description = "Premium executive sedan for business travel or special occasions.",
-                    ImagePath = "/images/cars/Elantra_rear.jpeg",
-                    Location = "Kumasi, Ghana"
+                    ImagePath = "/images/cars/placeholder.svg",
+                    Location = "Kumasi, Ghana",
+                    DisplayOrder = 4
                 },
                 new Car
                 {
@@ -88,8 +105,9 @@ public static class SeedData
                     Seats = 5,
                     Transmission = "Automatic",
                     Description = "Comfortable mid-size SUV, great for families and weekend road trips.",
-                    ImagePath = "/images/cars/Corolla_side.jpeg",
-                    Location = "Kumasi, Ghana"
+                    ImagePath = "/images/cars/placeholder.svg",
+                    Location = "Kumasi, Ghana",
+                    DisplayOrder = 5
                 },
                 new Car
                 {
@@ -101,8 +119,9 @@ public static class SeedData
                     Seats = 5,
                     Transmission = "Manual",
                     Description = "Compact and budget-friendly, great for navigating busy city streets.",
-                    ImagePath = "/images/cars/rio.jpg",
-                    Location = "Kumasi, Ghana"
+                    ImagePath = "/images/cars/placeholder.svg",
+                    Location = "Kumasi, Ghana",
+                    DisplayOrder = 6
                 }
             });
 

@@ -128,9 +128,21 @@ body {
 }
 .rg-car-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,.14); transform: translateY(-3px); }
 
-.rg-car-img-wrapper { position: relative; overflow: hidden; height: 190px; }
-.rg-car-img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+.rg-car-img-wrapper { position: relative; overflow: hidden; height: 210px; background: #f5f5f5; }
+.rg-car-img { width: 100%; height: 100%; object-fit: contain; object-position: center; padding: 8px; transition: transform .3s; }
 .rg-car-card:hover .rg-car-img { transform: scale(1.04); }
+
+.rg-coming-soon-banner {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,.62);
+    color: #d4a017;
+    text-align: center;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 0;
+}
 
 .rg-badge-category {
     position: absolute; top: 10px; left: 10px;
@@ -211,7 +223,7 @@ body {
 @media (max-width: 768px) {
     .btn { min-height: 44px; }
     .form-control, .form-select { min-height: 48px; font-size: 1rem; }
-    .rg-car-img-wrapper { height: 160px; }
+    .rg-car-img-wrapper { height: 180px; }
     .rg-hero-content h1 { font-size: 1.8rem; }
 }
 
